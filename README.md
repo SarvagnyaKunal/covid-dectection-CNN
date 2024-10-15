@@ -1,1 +1,1 @@
-# covid-dectection-CNN
+# covid-dectection-CNN.

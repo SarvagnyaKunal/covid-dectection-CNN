@@ -1,2 +1,2 @@
-# covid-dectection-CNN.
-# Band karo karna virod istamal karo covid ka nirod
+# covid-dectection-CNN.#
+ Analysing X-rays of chest to identify whether the respective person is diagnosed with COVID-19 

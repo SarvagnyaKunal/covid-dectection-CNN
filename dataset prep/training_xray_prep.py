@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 
 def preprocess_image(input_path, output_size=(256, 256)):
-    """Process individual image: resize, grayscale, and save as PNG."""
+    """Process individual image: resize, grayscale, set value range b/w 0-1."""
     img = cv2.imread(input_path)
     
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -15,18 +15,18 @@ def preprocess_image(input_path, output_size=(256, 256)):
 
     return img_normalized
 
-def load_images_from_folder(folder_path, output_size=(256, 256)):
+def load_images_from_folder(folder_path, output_size=(256, 256),max_image=200):
     """Load and preprocess images from a folder."""
     image_array = []
     for image_file in os.listdir(folder_path):
-        if image_file.endswith((".jpg", ".jpeg", ".png")):
+        if image_file.endswith((".jpg", ".jpeg", ".png"))and count < max_image:
             image_path = os.path.join(folder_path, image_file)
             processed_image = preprocess_image(image_path, output_size)
             image_array.append(processed_image)
     return np.array(image_array)
 
-def load_all_data(base_folder, output_size=(256, 256)):
-    """Load images for test, train, and validate datasets from specified folder structure."""
+def load_all_data(base_folder, output_size=(256, 256),max_images=200):
+    """Load images for test, train, and validate from dataset"""
     
     # Paths for test, train, and validate sets
     test_folder = os.path.join(base_folder, "Test")
@@ -34,8 +34,6 @@ def load_all_data(base_folder, output_size=(256, 256)):
     validate_folder = os.path.join(base_folder, "Val")
     
     categories = ['COVID-19', 'Non-COVID', 'Normal']
-    
-    # Initialize lists 
     test_images = []
     train_images = []
     val_images = []
@@ -46,7 +44,7 @@ def load_all_data(base_folder, output_size=(256, 256)):
         
         for category in categories:
             folder_path = os.path.join(dataset_folder, category)
-            images = load_images_from_folder(folder_path, output_size=(256,256))
+            images = load_images_from_folder(folder_path, output_size=(256,256),max_images=200)
             dataset_images.append(images)
         # Append the lists for test, train, and validate datasets
         if dataset_folder == test_folder:
@@ -59,11 +57,7 @@ def load_all_data(base_folder, output_size=(256, 256)):
     return test_images, train_images, val_images
 
 if __name__ == "__main__":
-    # Base folder location
     base_folder ="/media/kunal/dual volume/code/covid-dectection-CNN/dataset_container/train_data/Infection Segmentation Data"
     
     # Load data for test, train, and validation sets
-    test_images, train_images, val_images = load_all_data(base_folder)
-    print(f"Test images: {len(test_images[0])} covid, {len(test_images[1])} other, {len(test_images[2])} normal")
-    print(f"Train images: {len(train_images[0])} covid, {len(train_images[1])} other, {len(train_images[2])} normal")
-    print(f"Validation images: {len(val_images[0])} covid, {len(val_images[1])} other, {len(val_images[2])} normal")
+    test_images, train_images, val_images = load_all_data(base_folder,max_images=200)

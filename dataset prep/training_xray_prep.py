@@ -11,13 +11,9 @@ def preprocess_image(input_path, output_size=(256, 256)):
     
     img_resized = cv2.resize(img_gray, output_size)
     
-    base_name = os.path.splitext(input_path)[0]
-    png_path = f"{base_name}.png"
-    Image.fromarray(img_resized).save(png_path)
+    img_normalized = img_resized / 255.0
 
-    img_array = np.array(img_resized)
-    
-    return img_array
+    return img_normalized
 
 def load_images_from_folder(folder_path, output_size=(256, 256)):
     """Load and preprocess images from a folder."""
@@ -68,3 +64,6 @@ if __name__ == "__main__":
     
     # Load data for test, train, and validation sets
     test_images, train_images, val_images = load_all_data(base_folder)
+    print(f"Test images: {len(test_images[0])} covid, {len(test_images[1])} other, {len(test_images[2])} normal")
+    print(f"Train images: {len(train_images[0])} covid, {len(train_images[1])} other, {len(train_images[2])} normal")
+    print(f"Validation images: {len(val_images[0])} covid, {len(val_images[1])} other, {len(val_images[2])} normal")

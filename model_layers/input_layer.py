@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from dataset prep import temp.py
 
 class CNNModel(nn.Module):
     def __init__(self, num_classes=3):

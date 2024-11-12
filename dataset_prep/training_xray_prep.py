@@ -9,28 +9,28 @@ class CustomDataset(Dataset):
     
     def __init__(self, image_folders, categories, max_images=200, transform=None):
 
-        self.image_folders = image_folders  # List of image folder paths
-        self.categories = categories  # Categories
+        self.image_folders = image_folders  
+        self.categories = categories
         self.max_images = max_images 
         self.transform = transform 
         
-        self.image_paths = []  # List of image paths
-        self.labels = []  # list of labels
+        self.image_paths = [] 
+        self.labels = []
         
         # Populate the image paths and labels, limiting to max_images
         for folder in image_folders:
             for label_idx, category in enumerate(categories):
                 category_folder = os.path.join(folder, category)
-                count = 0  # Track number of images per category
+                count = 0
                 for image_file in os.listdir(category_folder):
                     if image_file.endswith((".jpg", ".jpeg", ".png")) and count < max_images:
                         image_path = os.path.join(category_folder, image_file)
                         self.image_paths.append(image_path)
-                        self.labels.append(label_idx)  # Assign label (0 for COVID-19, etc.)
+                        self.labels.append(label_idx)
                         count += 1
     
     def __len__(self):
-        return len(self.image_paths)  # Total number of images
+        return len(self.image_paths)
     
     def __getitem__(self, idx):
         """Load and return an image and its label."""

@@ -2,7 +2,8 @@
 myenv
 
 #datasets
-dataset_container
+dataset_container/train_data
+dataset_container/working_input_data
 
 #temp test files
 dataset prep/temp.py

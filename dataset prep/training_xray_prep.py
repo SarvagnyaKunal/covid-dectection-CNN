@@ -3,7 +3,6 @@ import cv2
 import torch
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-import cv2
 
 class CustomDataset(Dataset):
     """Custom dataset for loading images and labels."""
@@ -54,7 +53,7 @@ class CustomDataset(Dataset):
 
 def load_data(base_folder, categories=['COVID-19', 'Non-COVID', 'Normal'], max_images=200):
     """Load image paths and labels for training, validation, and testing."""
-    # Folder paths for Train, Val, and Test datasets
+    # Folder paths
     train_folder = os.path.join(base_folder, "Train")
     val_folder = os.path.join(base_folder, "Val")
     test_folder = os.path.join(base_folder, "Test")

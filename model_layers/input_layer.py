@@ -1,6 +1,10 @@
+# do not use this code
+# its a direct pytorch code
+
+'''
 import torch
 import torch.nn as nn
-from dataset prep import temp.py
+from dataset_prep import training_xray_prep 
 
 class CNNModel(nn.Module):
     def __init__(self, num_classes=3):
@@ -36,3 +40,4 @@ class CNNModel(nn.Module):
         x = self.fc2(x)
         
         return x
+'''

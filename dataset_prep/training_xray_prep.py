@@ -71,10 +71,10 @@ def load_all_data(base_folder, output_size=(256, 256), max_images=200):
     train_images = np.array(train_images)  # Shape: (3, num_images, 256, 256)
     val_images = np.array(val_images)  # Shape: (3, num_images, 256, 256)
 
-    # Now reshape the images by adding an extra dimension for channels (grayscale)
-    test_images = test_images.reshape(3, max_images, 1, 256, 256)
-    train_images = train_images.reshape(3, max_images, 1, 256, 256)
-    val_images = val_images.reshape(3, max_images, 1, 256, 256)
+    '''Now reshape the images by adding an extra dimension for channels (grayscale)'''
+    # test_images = test_images.reshape(3, max_images, 1, 256, 256)
+    # train_images = train_images.reshape(3, max_images, 1, 256, 256)
+    # val_images = val_images.reshape(3, max_images, 1, 256, 256)
 
     return test_images, train_images, val_images
 
@@ -87,6 +87,6 @@ if __name__ == "__main__":
     
     # Print the shape to verify
     print(f"Test Images Shape: {test_images.shape}")
-    test_image = test_images[0,1,0]
-    plt.imshow(test_image) 
-    plt.show()
+    # test_image = test_images[0,1,0]
+    # plt.imshow(test_image) 
+    # plt.show()

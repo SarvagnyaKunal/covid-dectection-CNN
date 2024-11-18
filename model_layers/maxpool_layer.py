@@ -12,6 +12,7 @@ def max_pooling(input_array, pool_size=2, stride=2):
     Returns:
     - Pooled output as a numpy array.
     """
+    
     if input_array.ndim == 2:  # Single channel
         input_array = input_array[np.newaxis, ...]  # Add channel dimension
     

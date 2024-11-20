@@ -12,7 +12,7 @@ class Conv2D:
         self.weights = np.random.randn(output_channels, input_channels, kernel_size, kernel_size)
         self.biases = np.random.randn(output_channels)
 
-    def forward(self, x):
+    def conv_forward(self, x):
         #padding
         x_padded = np.pad(x, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
         

@@ -13,18 +13,17 @@ class Conv2D:
         self.biases = np.random.randn(output_channels)
 
     def forward(self, x):
-        # Add padding to the input
+        #padding
         x_padded = np.pad(x, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
         
-        # Calculate output dimensions
+        #output dimensions
         batch_size, in_channels, input_height, input_width = x.shape
         out_height = (input_height - self.kernel_size + 2 * self.padding) // self.stride + 1
         out_width = (input_width - self.kernel_size + 2 * self.padding) // self.stride + 1
         
-        # Initialize output
         output = np.zeros((batch_size, self.output_channels, out_height, out_width))
 
-        # Perform the convolution
+        #Convolution
         for b in range(batch_size):
             for o in range(self.output_channels):
                 for i in range(out_height):
@@ -35,9 +34,3 @@ class Conv2D:
                         output[b, o, i, j] = np.sum(region * self.weights[o]) + self.biases[o]
         
         return output
-
-# Example usage
-input_tensor = np.random.randn(1, 3, 32, 32)  # (batch_size, input_channels, height, width)
-conv_layer = Conv2D(input_channels=3, output_channels=8, kernel_size=3, stride=1, padding=1)
-output_tensor = conv_layer.forward(input_tensor)
-print("Output shape:", output_tensor.shape)

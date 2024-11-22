@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 
 #resizing / colourconvret / formatconvert
-def preprocess_image(input_path, output_size=(256, 256)):
+def preprocess_image(input_path, output_size=(224, 224)):
     img = cv2.imread(input_path)
     
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

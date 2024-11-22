@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt 
 
-def preprocess_image(input_path, output_size=(256, 256)):
+def preprocess_image(input_path, output_size=(224, 224)):
     """Process individual image: resize, grayscale, set value range b/w 0-1."""
     img = cv2.imread(input_path)
     
@@ -20,7 +20,7 @@ def preprocess_image(input_path, output_size=(256, 256)):
     # Return the processed image
     return img_normalized
 
-def load_images_from_folder(folder_path, output_size=(256, 256), max_images=200):
+def load_images_from_folder(folder_path, output_size=(224, 224), max_images=200):
     """Load and preprocess images from a folder."""
     image_array = []
     count = 0  # Initialize count to control max number of images
@@ -33,7 +33,7 @@ def load_images_from_folder(folder_path, output_size=(256, 256), max_images=200)
             count += 1  # Increment the counter
     return np.array(image_array)
 
-def load_all_data(base_folder, output_size=(256, 256), max_images=200):
+def load_all_data(base_folder, output_size=(224, 224), max_images=200):
     """Load images for test, train, and validate from dataset."""
     
     # Paths for test, train, and validate sets
@@ -54,7 +54,7 @@ def load_all_data(base_folder, output_size=(256, 256), max_images=200):
         
         for category in categories:
             folder_path = os.path.join(dataset_folder, category)
-            images = load_images_from_folder(folder_path, output_size=(256,256), max_images=max_images)
+            images = load_images_from_folder(folder_path, output_size=(224,224), max_images=max_images)
             dataset_images.append(images)  # Add images of the current category to dataset_images
         
         # Append the dataset images to the respective lists

@@ -34,3 +34,4 @@ class Conv2D:
                         output[b, o, i, j] = np.sum(region * self.weights[o]) + self.biases[o]
         
         return output
+

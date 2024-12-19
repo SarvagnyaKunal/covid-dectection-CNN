@@ -79,8 +79,7 @@ def load_all_data(base_folder, output_size=(224, 224), max_images=200):
     return test_images, train_images, val_images
 
 if __name__ == "__main__":
-
-    base_folder = "/media/kunal/dual volume/code/covid-dectection-CNN/dataset_container/train_data/Infection Segmentation Data"
+    base_folder = "c:/Users/sarva/Desktop/nf/code/covid-dectection-CNN/dataset_container/train_data/Infection Segmentation Data"
     
     # Load data for test, train, and validation sets
     test_images, train_images, val_images = load_all_data(base_folder, max_images=200)

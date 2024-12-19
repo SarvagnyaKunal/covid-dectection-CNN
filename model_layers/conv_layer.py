@@ -13,6 +13,7 @@ class Conv2D:
         self.biases = np.random.randn(output_channels)
 
     def conv_forward(self, x):
+        self.input = x  # Store input for backward pass
         #padding
         x_padded = np.pad(x, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
         
@@ -34,4 +35,37 @@ class Conv2D:
                         output[b, o, i, j] = np.sum(region * self.weights[o]) + self.biases[o]
         
         return output
+
+    def conv_backward(self, d_output, learning_rate):
+        batch_size, _, out_height, out_width = d_output.shape
+        d_input = np.zeros_like(self.input)
+        d_weights = np.zeros_like(self.weights)
+        d_biases = np.zeros_like(self.biases)
+        
+        x_padded = np.pad(self.input, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
+        d_x_padded = np.pad(d_input, ((0, 0), (0, 0), (self.padding, self.padding), (self.padding, self.padding)), mode='constant')
+        
+        for b in range(batch_size):
+            for o in range(self.output_channels):
+                for i in range(out_height):
+                    for j in range(out_width):
+                        h_start = i * self.stride
+                        h_end = h_start + self.kernel_size
+                        w_start = j * self.stride
+                        w_end = w_start + self.kernel_size
+                        
+                        region = x_padded[b, :, h_start:h_end, w_start:w_end]
+                        d_weights[o] += region * d_output[b, o, i, j]
+                        d_biases[o] += d_output[b, o, i, j]
+                        d_x_padded[b, :, h_start:h_end, w_start:w_end] += self.weights[o] * d_output[b, o, i, j]
+        
+        if self.padding != 0:
+            d_input = d_x_padded[:, :, self.padding:-self.padding, self.padding:-self.padding]
+        else:
+            d_input = d_x_padded
+        
+        self.weights -= learning_rate * d_weights
+        self.biases -= learning_rate * d_biases
+        
+        return d_input
 

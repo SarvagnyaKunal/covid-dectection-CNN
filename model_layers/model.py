@@ -41,5 +41,15 @@ class CNNModel:
         # Backward pass through second dropout layer
         d_loss = self.dropout2.backward(d_loss)
         # Backward pass through second conv layer
-        # ...existing code...
-        pass
+        d_loss = self.pool2.backward(d_loss)
+        d_loss = self.relu2.backward(d_loss)
+        d_loss = self.conv2.conv_backward(d_loss, learning_rate)
+        
+        # Backward pass through first dropout layer
+        d_loss = self.dropout1.backward(d_loss)
+        # Backward pass through first conv layer
+        d_loss = self.pool1.backward(d_loss)
+        d_loss = self.relu1.backward(d_loss)
+        d_loss = self.conv1.conv_backward(d_loss, learning_rate)
+        
+        return d_loss

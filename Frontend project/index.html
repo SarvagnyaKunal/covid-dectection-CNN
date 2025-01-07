@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COVID-19 X-ray Classification</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>COVID-19 X-ray Image Classification</h1>
+  </header>
+
+  <div class="container">
+    <h2>Patient Details & Upload</h2>
+    <p>Please provide the patient's details and upload the required files.</p>
+
+    <form id="upload-form" action="YOUR_BACKEND_API_ENDPOINT" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="patient-name">Patient Name:</label>
+        <input type="text" id="patient-name" name="patient_name" required>
+      </div>
+      <div class="form-group">
+        <label for="patient-age">Age:</label>
+        <input type="number" id="patient-age" name="patient_age" required>
+      </div>
+      <div class="form-group">
+        <label for="patient-gender">Gender:</label>
+        <select id="patient-gender" name="patient_gender" required>
+          <option value="">Select</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <h3>X-ray Images</h3>
+      <div class="upload-area" id="xray-upload-area">
+        <p>Drag & drop your X-ray image here</p>
+        <button type="button" id="xray-browse-btn">Browse files</button>
+        <input type="file" id="xray-upload" name="xray_image" accept="image/*" hidden required>
+      </div>
+
+      <h3>Reference Documents</h3>
+      <div class="upload-area" id="reference-upload-area">
+        <p>Drag & drop reference documents here</p>
+        <button type="button" id="reference-browse-btn">Browse files</button>
+        <input type="file" id="reference-upload" name="reference_documents" accept=".pdf,.doc,.docx,.jpg,.png" multiple hidden>
+      </div>
+
+      <button type="submit" class="button">Submit</button>
+    </form>
+
+    <div id="loading" style="display:none;">
+      <p>Processing... Please wait.</p>
+    </div>
+
+    <div id="result" class="result" style="display:none;">
+      <h3>Prediction Result</h3>
+      <p id="prediction-output">Waiting for result...</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 COVID-19 X-ray Classifier. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

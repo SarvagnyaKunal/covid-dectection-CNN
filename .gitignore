@@ -7,3 +7,9 @@ dataset_container/working_input_data
 
 #temp test files
 dataset prep/temp.py
+
+
+# pycache files
+dataset_container/_pycache_/
+dataset prep/_pycache_/
+tools/_pycache_/

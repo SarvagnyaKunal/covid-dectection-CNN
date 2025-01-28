@@ -4,6 +4,7 @@ myvenv
 #datasets
 dataset_container/train_data
 dataset_container/working_input_data
+test/
 
 #temp test files
 dataset prep/temp.py
@@ -13,3 +14,4 @@ dataset prep/temp.py
 dataset_container/_pycache_/
 dataset prep/_pycache_/
 tools/_pycache_/
+

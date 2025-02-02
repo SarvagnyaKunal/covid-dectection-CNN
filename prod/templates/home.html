@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COVID-19 X-ray Classification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #333131;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #ffffff;
+      color: rgb(53, 51, 51);
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      width: 80%;
+      color: #ddd;
+      margin: auto;
+      padding: 20px;
+    }
+    .drop-area {
+      width: 300px; /* Square shape */
+      height: 100px; /* Square shape */
+      border: 2px dashed #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      background-color: #202020;
+      border-radius: 10px;
+      margin: 20px auto;
+    }
+    .drop-area.highlight {
+      border-color: #00ff00;
+    }
+    .drop-area p {
+      margin: 0;
+      font-size: 18px;
+      color: white;
+    }
+    .file-input {
+      display: none;
+    }
+    .preview {
+      margin-top: 20px;
+      display: none;
+    }
+    .preview img {
+      width: 300px;
+      height: auto;
+      border-radius: 5px;
+      border: 2px solid white;
+    }
+    .button {
+      background-color: #000000;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background-color: #3b3939;
+    }
+    .loading {
+      margin-top: 20px;
+      display: none;
+      color: white;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      display: none;
+      color: black;
+    }
+    .result h3 {
+      margin: 0 0 10px;
+    }
+    .result p {
+      font-size: 18px;
+    }
+    .fine-print {
+        font-size: 12px;
+        color: #666;
+        margin-top: 10px;
+        display: none;
+        font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>COVID-19 DETECTION</h1>
+  </header>
+
+  <div class="container">
+    <h2>Upload X-ray Image</h2>
+    <div style="position: absolute; top: 20px; right: 20px;">
+        <span style="color: white;">Welcome, {name}!</span>
+        <form action="/logout" method="POST" style="display: inline-block; margin-left: 10px;">
+            <button type="submit" class="button">Logout</button>
+        </form>
+    </div>
+    <p>Drag and drop a chest X-ray image or click to select a file.</p>
+
+    <!-- Square Drag and Drop Area -->
+    <div id="drop-area" class="drop-area">
+      <p>Drag & Drop Image Here <br>or Click to Browse</p>
+      <input type="file" id="file-input" class="file-input" accept="image/*">
+    </div>
+
+    <!-- Image Preview -->
+    <div class="preview" id="preview">
+      <h3>Preview:</h3>
+      <img id="preview-image" src="" alt="Preview">
+      <br>
+      <button id="upload-button" class="button">Classify Image</button>
+    </div>
+
+    <!-- Loading Message -->
+    <div id="loading" class="loading">
+      <p>Processing the image... Please wait.</p>
+    </div>
+
+    <!-- Result Display -->
+    <div id="result" class="result">
+      <h3>Prediction Result</h3>
+      <p id="prediction-output">Waiting for result...</p>
+      <p id="confidence-note" class="fine-print">
+        Note: If the prediction confidence is low, there might be a non-COVID respiratory condition present.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const preview = document.getElementById('preview');
+    const previewImage = document.getElementById('preview-image');
+    const uploadButton = document.getElementById('upload-button');
+    const loading = document.getElementById('loading');
+    const result = document.getElementById('result');
+    const predictionOutput = document.getElementById('prediction-output');
+    const confidenceNote = document.getElementById('confidence-note');
+
+    // Handle Drag & Drop
+    dropArea.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      dropArea.classList.add('highlight');
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('highlight');
+    });
+
+    dropArea.addEventListener('drop', (event) => {
+      event.preventDefault();
+      dropArea.classList.remove('highlight');
+
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        displayPreview(file);
+      }
+    });
+
+    // Handle File Selection
+    dropArea.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        displayPreview(file);
+      }
+    });
+
+    // Display Image Preview
+    function displayPreview(file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        previewImage.src = reader.result;
+        preview.style.display = 'block';
+      };
+    }
+
+    // Upload and Classify Image
+    uploadButton.addEventListener('click', () => {
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please select an image first.');
+        return;
+      }
+
+      loading.style.display = 'block';
+      result.style.display = 'none';
+      confidenceNote.style.display = 'none'; // Reset note visibility
+
+      const formData = new FormData();
+      formData.append('xray', file);
+
+      fetch('/predict', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.prediction) {
+              // Extract numerical confidence value
+              const confidenceValue = parseFloat(data.confidence.replace('%', ''));
+
+              predictionOutput.innerHTML = `
+                  Prediction: ${data.prediction} <br>
+                  Confidence: ${data.confidence}
+              `;
+
+
+              confidenceNote.style.display = confidenceValue < 75 ? 'block' : 'none';
+          } else {
+              predictionOutput.innerHTML = `Error: ${data.error}`;
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          predictionOutput.innerHTML = 'An error occurred during prediction';
+      })
+      .finally(() => {
+          loading.style.display = 'none';
+          result.style.display = 'block';
+      });
+    });
+</script>
+
+</body>
+</html>

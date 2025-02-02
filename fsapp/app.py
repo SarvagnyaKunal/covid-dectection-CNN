@@ -78,6 +78,9 @@ def home():
     if "email" not in session:
         return redirect(url_for("login"))
 
+    # Fetch user details from MongoDB
+    user = mongo.db.users.find_one({"email": session["email"]})
+
     if request.method == "POST":
         if "xray" not in request.files:
             return "No file uploaded"
@@ -96,7 +99,8 @@ def home():
         os.remove(filepath)  # Clean up uploaded file
         return jsonify({"prediction": result})
 
-    return render_template("home.html")
+    return render_template("home.html", name=user["name"], age=user["age"], gender=user["gender"])
+
 
 @app.route("/logout")
 def logout():

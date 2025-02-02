@@ -4,12 +4,8 @@ myvenv
 #datasets
 dataset_container/train_data
 dataset_container/working_input_data
-DB/COVID-19
-DB/Normal
-
-#temp test files
-dataset prep/temp.py
-
+ptm/DB/COVID-19
+ptm/DB/Normal
 
 # pycache files
 dataset_container/_pycache_/

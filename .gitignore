@@ -9,5 +9,4 @@ dataset_container/working_input_data
 dataset prep/temp.py
 test/
 
-ptm/DB/COVID-19
-ptm/DB/Normal
+ptm/DB

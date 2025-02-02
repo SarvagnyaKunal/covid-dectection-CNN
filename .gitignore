@@ -8,3 +8,6 @@ dataset_container/working_input_data
 #temp test files
 dataset prep/temp.py
 test/
+
+ptm/DB/COVID-19
+ptm/DB/Normal

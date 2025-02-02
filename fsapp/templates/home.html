@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload X-ray</title>
+</head>
+<body>
+    <h2>Upload a Chest X-ray</h2>
+    <form action="/home" method="POST" enctype="multipart/form-data">
+        <input type="file" name="xray" accept="image/*" required><br>
+        <button type="submit">Analyze</button>
+    </form>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

@@ -6,6 +6,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import matplotlib.pyplot as plt
 from collections import Counter
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 # Check if GPU is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -78,12 +79,24 @@ class CovidNet(nn.Module):
  # Initialize the model, loss function, optimizer, and scheduler (Highlighted Change 3)
 model = CovidNet().to(device)
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.0001)
+optimizer = optim.Adam(model.parameters(), lr=0.001)  # Updated learning rate
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+
+# Initialize lists to store metrics for plotting
+train_losses = []
+val_losses = []
+train_accuracies = []
+val_accuracies = []
+train_precisions = []
+val_precisions = []
+train_recalls = []
+val_recalls = []
+train_f1s = []
+val_f1s = []
 
 # Start training with validation and model saving (Highlighted Change 4)
 print('Starting training...')
-num_epochs = 10
+num_epochs = 15  # Updated number of epochs
 best_val_loss = float('inf')  # Track the best validation loss
 model_save_path = r"C:\Users\sarva\Desktop\nf\code\edochetta\model2.pth"  # Path to save the model
 
@@ -93,6 +106,8 @@ for epoch in range(num_epochs):
     running_loss = 0.0
     correct = 0
     total = 0
+    all_labels = []
+    all_predictions = []
 
     for i, data in enumerate(train_loader, 0):
         inputs, labels = data
@@ -110,15 +125,27 @@ for epoch in range(num_epochs):
         predicted = (torch.sigmoid(outputs) > 0.5).float()  # Apply Sigmoid here for prediction
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
+        all_labels.extend(labels.cpu().numpy())
+        all_predictions.extend(predicted.cpu().numpy())
 
     train_accuracy = 100 * correct / total
-    print(f'Epoch {epoch + 1} Training Loss: {running_loss / len(train_loader):.4f} Accuracy: {train_accuracy:.2f}%')
+    train_precision = precision_score(all_labels, all_predictions, zero_division=0)
+    train_recall = recall_score(all_labels, all_predictions, zero_division=0)
+    train_f1 = f1_score(all_labels, all_predictions, zero_division=0)
+    train_losses.append(running_loss / len(train_loader))
+    train_accuracies.append(train_accuracy)
+    train_precisions.append(train_precision)
+    train_recalls.append(train_recall)
+    train_f1s.append(train_f1)
+    print(f'Epoch {epoch + 1} Training Loss: {train_losses[-1]:.4f} Accuracy: {train_accuracy:.2f}% Precision: {train_precision:.2f} Recall: {train_recall:.2f} F1: {train_f1:.2f}')
 
     # Validation phase
     model.eval()
     val_loss = 0.0
     correct_val = 0
     total_val = 0
+    all_val_labels = []
+    all_val_predictions = []
 
     with torch.no_grad():
         for inputs, labels in val_loader:
@@ -132,10 +159,19 @@ for epoch in range(num_epochs):
             predicted = (torch.sigmoid(outputs) > 0.5).float()
             total_val += labels.size(0)
             correct_val += (predicted == labels).sum().item()
+            all_val_labels.extend(labels.cpu().numpy())
+            all_val_predictions.extend(predicted.cpu().numpy())
 
     val_accuracy = 100 * correct_val / total_val
-    val_loss /= len(val_loader)
-    print(f'Epoch {epoch + 1} Validation Loss: {val_loss:.4f} Accuracy: {val_accuracy:.2f}%')
+    val_precision = precision_score(all_val_labels, all_val_predictions, zero_division=0)
+    val_recall = recall_score(all_val_labels, all_val_predictions, zero_division=0)
+    val_f1 = f1_score(all_val_labels, all_val_predictions, zero_division=0)
+    val_losses.append(val_loss / len(val_loader))
+    val_accuracies.append(val_accuracy)
+    val_precisions.append(val_precision)
+    val_recalls.append(val_recall)
+    val_f1s.append(val_f1)
+    print(f'Epoch {epoch + 1} Validation Loss: {val_losses[-1]:.4f} Accuracy: {val_accuracy:.2f}% Precision: {val_precision:.2f} Recall: {val_recall:.2f} F1: {val_f1:.2f}')
 
     # Step the scheduler
     scheduler.step()
@@ -147,8 +183,56 @@ for epoch in range(num_epochs):
         print(f"Model saved at epoch {epoch + 1}")
 
 print('Finished Training')
- 
-                                        # Test the model (Highlighted Change 5)
+
+# Plotting the metrics
+epochs = range(1, len(train_losses) + 1)  # Ensure epochs length matches metrics lists
+
+plt.figure(figsize=(12, 8))
+plt.subplot(2, 2, 1)
+plt.plot(epochs, train_losses, label='Train Loss')
+plt.plot(epochs, val_losses, label='Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.title('Loss')
+
+plt.subplot(2, 2, 2)
+plt.plot(epochs, train_accuracies, label='Train Accuracy')
+plt.plot(epochs, val_accuracies, label='Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.title('Accuracy')
+
+plt.subplot(2, 2, 3)
+plt.plot(epochs, train_precisions, label='Train Precision')
+plt.plot(epochs, val_precisions, label='Validation Precision')
+plt.xlabel('Epochs')
+plt.ylabel('Precision')
+plt.legend()
+plt.title('Precision')
+
+plt.subplot(2, 2, 4)
+plt.plot(epochs, train_recalls, label='Train Recall')
+plt.plot(epochs, val_recalls, label='Validation Recall')
+plt.xlabel('Epochs')
+plt.ylabel('Recall')
+plt.legend()
+plt.title('Recall')
+
+plt.tight_layout()
+plt.show()
+
+plt.figure()
+plt.plot(epochs, train_f1s, label='Train F1 Score')
+plt.plot(epochs, val_f1s, label='Validation F1 Score')
+plt.xlabel('Epochs')
+plt.ylabel('F1 Score')
+plt.legend()
+plt.title('F1 Score')
+plt.show()
+
+# Test the model (Highlighted Change 5)
 print('Testing the model...')
 model.eval()
 test_loss = 0.0

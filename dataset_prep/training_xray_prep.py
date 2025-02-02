@@ -57,8 +57,7 @@ def load_all_data(base_folder, output_size=(224, 224), max_images=200):
             images = load_images_from_folder(folder_path, output_size=(224,224), max_images=max_images)
             dataset_images.append(images)  # Add images of the current category to dataset_images
         
-        # Append the dataset images to the respectiv+
-        # e lists
+        # Append the dataset images to the respective lists
         if dataset_folder == test_folder:
             test_images = dataset_images
         elif dataset_folder == train_folder:
@@ -66,9 +65,9 @@ def load_all_data(base_folder, output_size=(224, 224), max_images=200):
         else:
             val_images = dataset_images
     
-    # Convert the images into the required shape: [3, num_images, 1, 244, 244]
+    # Convert the images into the required shape: [3, num_images, 1, 256, 256]
     # First, reshape the images to the desired format
-    test_images = np.array(test_images)  # Shape: (3, num_images, 244, 244)
+    test_images = np.array(test_images)  # Shape: (3, num_images, 256, 256)
     train_images = np.array(train_images)  # Shape: (3, num_images, 256, 256)
     val_images = np.array(val_images)  # Shape: (3, num_images, 256, 256)
 

@@ -3,6 +3,7 @@ import numpy as np
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
+#sigmoid derivative for backpropagation
 def sigmoid_derivative(x):
     return x * (1 - x)
 
@@ -17,18 +18,19 @@ class FullyConnectedLayer:
         self.output = sigmoid(self.z)
         return self.output
 
-    def backward(self, d_loss):
+    def backward(self, d_loss, learning_rate):
         d_sigmoid = sigmoid_derivative(self.output)
         d_output = d_loss * d_sigmoid
         
         # Gradients for weights and biases
-        self.d_weights = np.dot(self.input.T, d_output)
-        self.d_biases = np.sum(d_output, axis=0, keepdims=True)
+        d_weights = np.dot(self.input.T, d_output)
+        d_biases = np.sum(d_output, axis=0, keepdims=True)
         
         # Gradients for the input (to propagate backward)
         d_input = np.dot(d_output, self.weights.T)
         
+        # Update weights and biases
+        self.weights -= learning_rate * d_weights
+        self.biases -= learning_rate * d_biases
+        
         return d_input
-
-    def get_params_and_grads(self):
-        return [(self.weights, self.d_weights), (self.biases, self.d_biases)]

@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'd
 import numpy as np
 from model import CNNModel
 from training_xray_prep import load_all_data
+from adam_opt import AdamOptimizer
 
 def binary_cross_entropy_loss(predictions, targets):
     epsilon = 1e-12
@@ -18,6 +19,7 @@ def binary_cross_entropy_loss_derivative(predictions, targets):
     return (predictions - targets) / (predictions * (1 - predictions))
 
 def train(model, train_images, train_labels, learning_rate, epochs):
+    optimizer = AdamOptimizer(learning_rate=learning_rate)
     for epoch in range(epochs):
         total_loss = 0
         for i in range(len(train_images)):
@@ -33,7 +35,12 @@ def train(model, train_images, train_labels, learning_rate, epochs):
             
             # Backward pass
             d_loss = binary_cross_entropy_loss_derivative(predictions, y)
-            model.backward(d_loss, learning_rate)
+            grads = model.backward(d_loss)
+            
+            # Update parameters using Adam optimizer
+            params = model.get_params()
+            updated_params = optimizer.update(params, grads)
+            model.set_params(updated_params)
         
         avg_loss = total_loss / len(train_images)
         print(f"Epoch {epoch + 1}/{epochs}, Loss: {avg_loss}")
